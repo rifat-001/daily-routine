@@ -1,0 +1,212 @@
+
+
+*, *::after, *::before{
+    margin: 0;
+    padding : 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --primary-color : #EDEBDF;
+    --secondary-color : #EAC9AA;
+    --green : #039111;
+    --black : #333;
+}
+
+body{
+    font-family: "Poppins", sans-serif;
+}
+
+.container{
+    max-width: 768px;
+    margin: 0 auto;
+    padding : 16px;
+}
+
+
+/* utility */
+
+.small-icon{
+    width : 16px;
+    height : 16px;
+    cursor : pointer;
+}
+
+.medium-icon{
+    width : 24px;
+    height : 24px;
+    cursor : pointer;
+}
+
+.large-icon{
+    width : 32px;
+    height : 32px;
+    cursor : pointer;
+}
+
+
+
+/* Components */
+
+
+/* =========header========= */
+
+header{
+    padding : 20px;
+    display: flex;
+    align-items: center;
+    border : 1px solid var(--black)
+}
+
+
+.header-title{
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    font-size : 32px
+}
+
+
+
+
+@keyframes slide-down{
+    from{
+        opacity: 0%;
+        transform: translateY(-50px);
+    }
+
+    to{
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@keyframes slide-up{
+    from{
+        opacity: 1;
+        display: block;
+    }
+
+    to{
+        opacity: 50%;
+        transform: translateY(-100%);
+        display: none;
+      
+    }
+}
+
+.hide{
+    display: none;
+}
+.show{
+    animation: slide-down .5s;
+}
+
+div[open]{
+    background-color: red;
+}
+/* ==========Create Button =============== */
+
+
+
+.create-btn{
+    width: 100%;
+    outline: none;
+    border : 1px dashed var(--green);
+    padding : 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap : 8px;
+    color : var(--green);
+    border-radius: 8px;
+    background: transparent;
+    cursor : pointer;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: inherit;
+    
+}
+
+
+
+/* ============  Option menu ========*/
+
+.category-container{
+    display: flex;
+    flex-direction: column;
+    gap : 40px;
+    padding : 20px 0;
+}
+
+.list-menu{
+    padding : 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background : var(--primary-color);
+    font-family: inherit;
+    border : 1px solid var(--black);
+    width : 100%;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 3;
+}
+
+.task .list-menu{
+    background-color: transparent !important;
+    font-weight: normal;
+    cursor: default;
+}
+
+.category > .list-menu{
+    font-size: 20px;
+}
+
+ .list-menu-left, .list-menu-right{
+    display: flex;
+    align-items: center;
+   
+    gap : 16px;
+}
+
+
+/* list menu right */
+.list-menu-right{
+    gap : 24px;
+}
+
+.list-menu-right .arrow{
+    transform: rotate(180deg);
+    transition: .4s;
+}
+
+.list-menu[open] .arrow{
+    transform: rotate(0deg) !important;
+}
+
+
+.list-content{
+    border : 1px solid var(--black);
+    padding : 24px 16px;
+    border-top : 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.list-content.category-content{
+    gap : 20px;
+}
+
+.list-content.subject-content{
+    background-color: var(--secondary-color);
+}
+
+.list-content.subject-content{
+    gap : 16px;
+}
+
+
