@@ -1,3 +1,5 @@
+import { buildCategory } from './components.js';
+
 const categoryContainer = document.querySelector('.category-container');
 
 const accordionHandler = (e) => {

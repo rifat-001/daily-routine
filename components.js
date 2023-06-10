@@ -108,7 +108,7 @@ function buildSubjectListMenu(_subjectName, _status) {
 
 // ========================================================================
 
-function buildCategoryListMenu(_categoryName) {
+export function buildCategoryListMenu(_categoryName) {
 	// creating all building block
 	const listMenu = buildElement('div', ['list-menu']);
 	const listMenuLeft = buildElement('div', ['list-menu-left']);
@@ -141,9 +141,11 @@ function buildCategoryListMenu(_categoryName) {
 	return listMenu;
 }
 
-// ====================================================
+// ===================================================
+// ============= Building Subject with all of its TASKS =======
+//=======================================================
 
-function buildSubject(_subject) {
+export function buildSubject(_subject) {
 	const subject = buildElement('div', ['subject']);
 
 	const listMenu = buildSubjectListMenu(_subject.name);
@@ -160,7 +162,11 @@ function buildSubject(_subject) {
 	return subject;
 }
 
-function buildCategory(_category) {
+// ===================================================
+// ============= Building Category with all of its SUBJECTS =======
+//=======================================================
+
+export function buildCategory(_category) {
 	const category = buildElement('div', ['category']);
 
 	const listMenu = buildCategoryListMenu(_category.name);
