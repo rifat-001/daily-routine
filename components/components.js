@@ -22,7 +22,7 @@ function buildAddNewButton(title) {
 function buildTask(_task) {
 	const _taskTitle = _task.title;
 	const _status = _task.status;
-
+	const _id = _task.id;
 	// create all building block
 	const task = buildElement('div', ['task']);
 	const listMenu = buildElement('div', ['list-menu']);
@@ -32,7 +32,7 @@ function buildTask(_task) {
 	const checkbox = buildElement('input', ['task-checkbox']);
 
 	const taskTitle = buildElement('span', ['task-title']);
-	const editIcon = buildImage('assets/icons/pencil.png', 'small-icon');
+	const editIcon = buildImage('assets/icons/pencil.png', ['small-icon']);
 
 	const option = buildImage('assets/icons/option.png', [
 		'small-icon',
@@ -43,12 +43,13 @@ function buildTask(_task) {
 	// if the task is completed then add some classes and attribute to change the ui
 	if (_status) {
 		checkbox.setAttribute('checked', true);
-		taskTitle.classList.add('completed-task');
+		task.classList.add('completed-task');
 	}
 
 	// assemble list-menu-left
 	checkbox.setAttribute('type', 'checkbox');
 	taskTitle.innerText = _taskTitle;
+	taskTitle.setAttribute('contenteditable', true);
 	listMenuLeft.append(checkbox, taskTitle, editIcon);
 
 	// assemble list-menu-right
@@ -57,6 +58,8 @@ function buildTask(_task) {
 	// assemble list-menu
 	listMenu.append(listMenuLeft, listMenuRight);
 
+	//assemble task
+	task.setAttribute('task-id', _id);
 	task.append(listMenu);
 
 	return task;
@@ -72,7 +75,7 @@ function buildSubjectListMenu(_subjectName, _status) {
 
 	const checkbox = buildElement('input', ['subject-checkbox']);
 	const subjectName = buildElement('span', ['category-name']);
-	const editIcon = buildImage('assets/icons/pencil.png', 'small-icon');
+	const editIcon = buildImage('assets/icons/pencil.png', ['small-icon']);
 
 	const addTask = buildImage('assets/icons/add.png', [
 		'small-icon',
@@ -89,7 +92,7 @@ function buildSubjectListMenu(_subjectName, _status) {
 	// if the subject task is completed then add some classes and attribute to change the ui
 	if (_status) {
 		checkbox.setAttribute('checked', true);
-		subjectName.classList.add('completed-subject');
+		listMenu.classList.add('completed-subject');
 	}
 
 	// assemble list-menu-left
@@ -98,9 +101,11 @@ function buildSubjectListMenu(_subjectName, _status) {
 	listMenuLeft.append(checkbox, subjectName, editIcon);
 
 	// assemble list-menu-right
+	arrow.setAttribute('accordion-trigger', true);
 	listMenuRight.append(addTask, doc, arrow, option);
 
 	// assemble list-menu
+	listMenu.setAttribute('accordion-trigger', true);
 	listMenu.append(listMenuLeft, listMenuRight);
 
 	return listMenu;
@@ -116,7 +121,7 @@ export function buildCategoryListMenu(_categoryName) {
 
 	const ListIcon = buildImage('assets/icons/category.png', ['medium-icon']);
 	const categoryName = buildElement('span', ['category-name']);
-	const editIcon = buildImage('assets/icons/pencil.png', 'small-icon');
+	const editIcon = buildImage('assets/icons/pencil.png', ['small-icon']);
 
 	const addTask = buildImage('assets/icons/add.png', [
 		'medium-icon',
@@ -133,9 +138,11 @@ export function buildCategoryListMenu(_categoryName) {
 	listMenuLeft.append(ListIcon, categoryName, editIcon);
 
 	// assemble list-menu-right
+	arrow.setAttribute('accordion-trigger', true);
 	listMenuRight.append(addTask, arrow, option);
 
 	// assemble list-menu
+	listMenu.setAttribute('accordion-trigger', true);
 	listMenu.append(listMenuLeft, listMenuRight);
 
 	return listMenu;
@@ -147,17 +154,25 @@ export function buildCategoryListMenu(_categoryName) {
 
 export function buildSubject(_subject) {
 	const subject = buildElement('div', ['subject']);
+	subject.setAttribute('data-target', _subject.id);
+	subject.setAttribute('accordion-header', true);
+	subject.setAttribute('close', true);
+	// subject.setAttribute('accordion-open', true);
 
-	const listMenu = buildSubjectListMenu(_subject.name);
+	const listMenu = buildSubjectListMenu(_subject.name, _subject.status);
 	const subjectContent = buildElement('div', [
 		'list-content',
 		'subject-content',
+		'accordion-content',
 	]);
+	subjectContent.setAttribute('data-value', _subject.id);
 
 	_subject.tasks.forEach((task) => {
 		subjectContent.appendChild(buildTask(task));
 	});
 
+	// assemble subject
+	subject.setAttribute('subject-id', _subject.id);
 	subject.append(listMenu, subjectContent);
 	return subject;
 }
@@ -168,18 +183,56 @@ export function buildSubject(_subject) {
 
 export function buildCategory(_category) {
 	const category = buildElement('div', ['category']);
+	category.setAttribute('data-target', _category.id);
+	category.setAttribute('accordion-header', true);
+	category.setAttribute('close', true);
 
 	const listMenu = buildCategoryListMenu(_category.name);
 	const categoryContent = buildElement('div', [
 		'list-content',
 		'category-content',
+		'accordion-content',
 	]);
+	categoryContent.setAttribute('data-value', _category.id);
+
 	categoryContent.appendChild(buildAddNewButton('Create New Subject'));
 	_category.subjects.forEach((subject) => {
 		categoryContent.appendChild(buildSubject(subject));
 	});
 
+	// assemble category
+	category.setAttribute('category-id', _category.id);
 	category.append(listMenu, categoryContent);
 
 	return category;
+}
+
+// ===============================================
+// ================= Updating UI=====================
+//==================================
+
+export function updateSubjectUI(
+	_categoryElement,
+	_OldsubjectElement,
+	_subjectData
+) {
+	const subject = buildSubject(_subjectData);
+	subject.setAttribute('open', _OldsubjectElement.getAttribute('open'));
+	subject.setAttribute('close', _OldsubjectElement.getAttribute('close'));
+
+	const categoryContent = _categoryElement.querySelector('.category-content');
+
+	categoryContent.insertBefore(subject, _OldsubjectElement);
+	categoryContent.removeChild(_OldsubjectElement);
+}
+
+export function updateTaskUI(_subjectElement, _oldTaskElement, _taskData) {
+	const task = buildTask(_taskData);
+	const subjectContentElement =
+		_subjectElement.querySelector('.subject-content');
+
+	subjectContentElement.classList.add('paused');
+	subjectContentElement.style.animationPlayState = 'paused';
+	subjectContentElement.insertBefore(task, _oldTaskElement);
+	subjectContentElement.removeChild(_oldTaskElement);
 }

@@ -21,6 +21,7 @@ body{
     max-width: 768px;
     margin: 0 auto;
     padding : 16px;
+    margin-bottom: 50vh;
 }
 
 
@@ -71,7 +72,7 @@ header{
 
 @keyframes slide-down{
     from{
-        opacity: 0%;
+        opacity: .2;
         transform: translateY(-50px);
     }
 
@@ -95,16 +96,31 @@ header{
     }
 }
 
-.hide{
+/* .hide{
+    display: none;
+} */
+
+
+/* div[accordion-header]  .accordion-content{
+    animation: slide-down .5s;
+} */
+
+div[accordion-header][close] .accordion-content{
     display: none;
 }
-.show{
+
+.slide-down{
     animation: slide-down .5s;
 }
 
-div[open]{
-    background-color: red;
+.completed-subject, .completed-task{
+    text-decoration: line-through;
+    background-color: rgb(241, 94, 110) !important;
 }
+
+/* div[open]{
+    background-color: red;
+} */
 /* ==========Create Button =============== */
 
 
@@ -178,11 +194,11 @@ div[open]{
 }
 
 .list-menu-right .arrow{
-    transform: rotate(180deg);
+    transform: rotate(-90deg);
     transition: .4s;
 }
 
-.list-menu[open] .arrow{
+[accordion-header][open] > .list-menu .arrow{
     transform: rotate(0deg) !important;
 }
 
