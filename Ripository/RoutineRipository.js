@@ -1,114 +1,125 @@
-const data = [
-	{
-		name: 'Math',
-		id: 1,
-		subjects: [
-			{
-				name: 'Algebra',
-				id: 1,
-				status: true,
-				tasks: [
-					{
-						title: 'Chapter 4',
-						id: 1,
-						status: false,
-					},
-					{
-						title: 'Chapter 5',
-						id: 2,
-						status: true,
-					},
-				],
-			},
-			{
-				name: 'Coding',
-				id: 2,
-				status: true,
-				tasks: [
-					{
-						title: 'Chapter 4',
-						id: 1,
-						status: false,
-					},
-					{
-						title: 'Chapter 5',
-						id: 2,
-						status: true,
-					},
-				],
-			},
-		],
-	},
-	{
-		name: 'English',
-		id: 2,
-		subjects: [
-			{
-				name: 'Algebra',
-				id: 1,
-				status: true,
-				tasks: [
-					{
-						title: 'Chapter 4',
-						id: 1,
-						status: false,
-					},
-					{
-						title: 'Chapter 5',
-						id: 2,
-						status: true,
-					},
-				],
-			},
-			{
-				name: 'Coding',
-				id: 2,
-				status: true,
-				tasks: [
-					{
-						title: 'Chapter 4',
-						id: 1,
-						status: false,
-					},
-					{
-						title: 'Chapter 5',
-						id: 2,
-						status: true,
-					},
-				],
-			},
-		],
-	},
-];
-
 export class RoutineRipository {
+	constructor() {
+		const defaultData = [
+			{
+				name: 'Math',
+				id: 1,
+				subjects: [
+					{
+						name: 'Algebra',
+						id: 1,
+						status: true,
+						tasks: [
+							{
+								title: 'Chapter 4',
+								id: 1,
+								status: false,
+							},
+							{
+								title: 'Chapter 5',
+								id: 2,
+								status: true,
+							},
+						],
+					},
+					{
+						name: 'Coding',
+						id: 2,
+						status: true,
+						tasks: [
+							{
+								title: 'Chapter 4',
+								id: 1,
+								status: false,
+							},
+							{
+								title: 'Chapter 5',
+								id: 2,
+								status: true,
+							},
+						],
+					},
+				],
+			},
+			{
+				name: 'English',
+				id: 2,
+				subjects: [
+					{
+						name: 'Algebra',
+						id: 1,
+						status: true,
+						tasks: [
+							{
+								title: 'Chapter 4',
+								id: 1,
+								status: false,
+							},
+							{
+								title: 'Chapter 5',
+								id: 2,
+								status: true,
+							},
+						],
+					},
+					{
+						name: 'Coding',
+						id: 2,
+						status: true,
+						tasks: [
+							{
+								title: 'Chapter 4',
+								id: 1,
+								status: false,
+							},
+							{
+								title: 'Chapter 5',
+								id: 2,
+								status: true,
+							},
+						],
+					},
+				],
+			},
+		];
+
+		if (!localStorage.routine)
+			localStorage.setItem('routine', JSON.stringify(defaultData));
+		this.data = JSON.parse(localStorage.routine);
+		console.log(this.data);
+	}
 	getAll() {
-		return data;
+		return this.data;
+	}
+
+	updateState() {
+		localStorage.setItem('routine', JSON.stringify(this.data));
 	}
 
 	getCategory(_id) {
 		let category = -1;
-		data.forEach((_category, _idx) => {
+		this.data.forEach((_category, _idx) => {
 			if (_category.id == _id) {
-				_category.idx = _idx;
 				category = _category;
 				return;
 			}
 		});
 		return category;
 	}
+
 	getSubject(_category_id, _subject_id) {
 		const category = this.getCategory(_category_id);
 		if (category == -1) return -1;
 
 		let subject = -1;
+		console.log(category.subjects);
 		category.subjects.forEach((_subject, _idx) => {
-			if ((_subject.id = _subject_id)) {
-				_subject.idx = _idx;
+			if (_subject.id == _subject_id) {
 				subject = _subject;
 				return;
 			}
 		});
+		// console.log(category, subject);
 		return subject;
 	}
 
@@ -117,7 +128,8 @@ export class RoutineRipository {
 
 		if (subject == -1) return -1;
 
-		let task = -1;
+		let task;
+
 		subject.tasks.forEach((_task, _idx) => {
 			if (_task.id == _task_id) {
 				_task.idx = _idx;
@@ -125,6 +137,7 @@ export class RoutineRipository {
 				return;
 			}
 		});
+
 		return task;
 	}
 
@@ -137,13 +150,15 @@ export class RoutineRipository {
 		// assign new task id with the previous one
 		_newTask.id = _task_id;
 
-		subject.tasks = subject.tasks.map((_task) => {
-			if (_task.id == _task_id) {
-				return _newTask;
-			}
-			return _task;
-		});
-
+		if (subject.tasks != undefined) {
+			subject.tasks = subject.tasks.map((_task) => {
+				if (_task.id == _task_id) {
+					return _newTask;
+				}
+				return _task;
+			});
+		}
+		this.updateState();
 		return _newTask;
 	}
 
@@ -165,7 +180,18 @@ export class RoutineRipository {
 			return _subject;
 		});
 
-		return _newSubject;
+		this.updateState();
+		return { ..._newSubject };
+	}
+
+	insertSubject(_category_id, _subjectData) {
+		const category = this.getCategory(_category_id);
+		_subjectData.id = category.subjects.length + 1;
+
+		category.subjects.push(_subjectData);
+		this.updateState();
+
+		return _subjectData;
 	}
 }
 

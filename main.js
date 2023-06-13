@@ -1,14 +1,40 @@
-import {
-	buildCategory,
-	buildSubject,
-	updateTaskUI,
-} from './components/components.js';
+import { buildCategory } from './components/components.js';
 import { RoutineRipository } from './Ripository/RoutineRipository.js';
 import { subjectHandler } from './Controllers/SubjectController.js';
+import { taskHandler } from './Controllers/TaskController.js';
+import { modal } from './components/Popup.js';
 
 const routine = new RoutineRipository();
 
 const categoryContainer = document.querySelector('.category-container');
+
+modal.init({
+	modalTitle: 'Create Category',
+	inputs: [
+		{
+			type: 'text',
+			name: 'category-name',
+			title: 'Category Name',
+		},
+		{
+			type: 'text',
+			name: 'category-data',
+			title: 'Category Data',
+		},
+		{
+			type: 'checkbox',
+			name: 'is-permanent',
+			title: 'Make it permanent',
+			state: true,
+		},
+		{
+			type: 'select',
+			name: 'category-options',
+			title: 'Category options',
+			options: ['hello', 'how', 'are', 'your'],
+		},
+	],
+});
 
 const accordionHandler = (e) => {
 	let target;
@@ -24,7 +50,6 @@ const accordionHandler = (e) => {
 	);
 
 	const accordionContent = target.querySelector('.accordion-content');
-	console.log(accordionContent);
 	if (!accordionContent) return;
 
 	if (target.hasAttribute('close')) {
@@ -39,37 +64,42 @@ const accordionHandler = (e) => {
 	}
 };
 
-function taskCheckBoxHandler(_task) {
-	//console.log(_task);
-	const subjectElem = _task.closest('.subject');
-	const categoryElem = subjectElem.closest('.category');
-
-	const subject_id = subjectElem.getAttribute('subject-id');
-	const category_id = categoryElem.getAttribute('category-id');
-	const task_id = _task.getAttribute('task-id');
-	//console.log(task_id);
-
-	// updating task data
-	let newTask = routine.getTask(category_id, subject_id, task_id);
-	newTask.status = !newTask.status;
-	newTask = routine.updateTask(category_id, subject_id, task_id, newTask);
-
-	//
-	subjectHandler.init(subjectElem).updateSubjectStatus();
-}
-
 function checkboxHandler(e) {
-	if (e.target.classList.contains('task-checkbox'))
-		taskCheckBoxHandler(e.target.closest('.task'));
-	else if (e.target.classList.contains('subject-checkbox')) {
+	if (e.target.classList.contains('task-checkbox')) {
+		const task = e.target.closest('.task');
+		if (!task) return;
+		taskHandler.init(task);
+		taskHandler.taskCheckBoxHandler();
+	} else if (e.target.classList.contains('subject-checkbox')) {
 		const subjectElem = e.target.closest('.subject');
 		subjectHandler.init(subjectElem);
 		subjectHandler.subjectCheckBoxHandler();
 	}
 }
 
+function popupHandler(e) {
+	if (
+		e.target.classList.contains('create-btn') ||
+		(e.target.parentElement &&
+			e.target.parentElement.classList.contains('create-btn'))
+	) {
+		const button = e.target.closest('.create-btn');
+		if (button.dataset.type == 'add-subject') {
+			const categoryElem = button.closest('.category');
+			const category_id = categoryElem.getAttribute('category-id');
+			const modalData = subjectHandler.prepareSubjectModal(
+				category_id,
+				'insert'
+			);
+			modal.init(modalData);
+			modal.showModal();
+		}
+	}
+}
+
 categoryContainer.addEventListener('click', accordionHandler);
 categoryContainer.addEventListener('change', checkboxHandler);
+categoryContainer.addEventListener('click', popupHandler, true);
 
 function init() {
 	const data = routine.getAll();

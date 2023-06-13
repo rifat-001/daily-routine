@@ -1,17 +1,18 @@
-function buildElement(tag, classList) {
+export function buildElement(tag, classList) {
 	const element = document.createElement(tag);
 	element.classList.add(...classList);
 	return element;
 }
 
-function buildImage(src, classList) {
+export function buildImage(src, classList) {
 	const image = buildElement('img', classList);
 	image.setAttribute('src', src);
 	return image;
 }
 
-function buildAddNewButton(title) {
+function buildAddNewButton(title, type) {
 	const button = buildElement('div', ['create-btn']);
+	button.setAttribute('data-type', type);
 	button.innerHTML = `
     <img src="assets/icons/plus.png" alt="" class="small-icon">
     <p>${title}</p>
@@ -19,7 +20,7 @@ function buildAddNewButton(title) {
 	return button;
 }
 
-function buildTask(_task) {
+export function buildTask(_task) {
 	const _taskTitle = _task.title;
 	const _status = _task.status;
 	const _id = _task.id;
@@ -75,7 +76,10 @@ function buildSubjectListMenu(_subjectName, _status) {
 
 	const checkbox = buildElement('input', ['subject-checkbox']);
 	const subjectName = buildElement('span', ['category-name']);
-	const editIcon = buildImage('assets/icons/pencil.png', ['small-icon']);
+	const editIcon = buildImage('assets/icons/pencil.png', [
+		'small-icon',
+		'create-subject',
+	]);
 
 	const addTask = buildImage('assets/icons/add.png', [
 		'small-icon',
@@ -157,6 +161,7 @@ export function buildSubject(_subject) {
 	subject.setAttribute('data-target', _subject.id);
 	subject.setAttribute('accordion-header', true);
 	subject.setAttribute('close', true);
+	subject.setAttribute('subject-id', _subject.id);
 	// subject.setAttribute('accordion-open', true);
 
 	const listMenu = buildSubjectListMenu(_subject.name, _subject.status);
@@ -167,12 +172,16 @@ export function buildSubject(_subject) {
 	]);
 	subjectContent.setAttribute('data-value', _subject.id);
 
-	_subject.tasks.forEach((task) => {
-		subjectContent.appendChild(buildTask(task));
-	});
+	subjectContent.appendChild(buildAddNewButton('Add a task', 'add-task'));
+
+	if (_subject.tasks != undefined) {
+		_subject.tasks.forEach((task) => {
+			subjectContent.appendChild(buildTask(task));
+		});
+	}
 
 	// assemble subject
-	subject.setAttribute('subject-id', _subject.id);
+
 	subject.append(listMenu, subjectContent);
 	return subject;
 }
@@ -195,7 +204,10 @@ export function buildCategory(_category) {
 	]);
 	categoryContent.setAttribute('data-value', _category.id);
 
-	categoryContent.appendChild(buildAddNewButton('Create New Subject'));
+	categoryContent.appendChild(
+		buildAddNewButton('Create New Subject', 'add-subject')
+	);
+
 	_category.subjects.forEach((subject) => {
 		categoryContent.appendChild(buildSubject(subject));
 	});
@@ -211,28 +223,17 @@ export function buildCategory(_category) {
 // ================= Updating UI=====================
 //==================================
 
-export function updateSubjectUI(
-	_categoryElement,
-	_OldsubjectElement,
-	_subjectData
-) {
-	const subject = buildSubject(_subjectData);
-	subject.setAttribute('open', _OldsubjectElement.getAttribute('open'));
-	subject.setAttribute('close', _OldsubjectElement.getAttribute('close'));
+export function updateCategory(_category_id, _newCategoryElem) {
+	const oldCategoryElem = document.querySelector(
+		`[category-id = "${_category_id}"]`
+	);
 
-	const categoryContent = _categoryElement.querySelector('.category-content');
+	if (!oldCategoryElem.hasAttribute('close')) {
+		_newCategoryElem.removeAttribute('close');
+		_newCategoryElem.setAttribute('open', '');
+	}
 
-	categoryContent.insertBefore(subject, _OldsubjectElement);
-	categoryContent.removeChild(_OldsubjectElement);
-}
-
-export function updateTaskUI(_subjectElement, _oldTaskElement, _taskData) {
-	const task = buildTask(_taskData);
-	const subjectContentElement =
-		_subjectElement.querySelector('.subject-content');
-
-	subjectContentElement.classList.add('paused');
-	subjectContentElement.style.animationPlayState = 'paused';
-	subjectContentElement.insertBefore(task, _oldTaskElement);
-	subjectContentElement.removeChild(_oldTaskElement);
+	const categoryContainer = oldCategoryElem.closest('.category-container');
+	categoryContainer.insertBefore(_newCategoryElem, oldCategoryElem);
+	categoryContainer.removeChild(oldCategoryElem);
 }

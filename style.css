@@ -11,17 +11,20 @@
     --secondary-color : #EAC9AA;
     --green : #039111;
     --black : #333;
+    --border-color : #999;
 }
 
 body{
     font-family: "Poppins", sans-serif;
+    position: relative;
 }
 
 .container{
     max-width: 768px;
+    min-width: 520px;
     margin: 0 auto;
     padding : 16px;
-    margin-bottom: 50vh;
+   
 }
 
 
@@ -45,7 +48,11 @@ body{
     cursor : pointer;
 }
 
-
+.btn{
+    padding : 8px 16px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+}
 
 /* Components */
 
@@ -226,3 +233,109 @@ div[accordion-header][close] .accordion-content{
 }
 
 
+/* ============modal============= */
+
+@keyframes popup {
+    from{
+       
+        transform: scale(1.2);
+    }
+    to{
+    
+        transform: scale(1);
+    }
+}
+
+
+@keyframes vanish {
+    from{
+       
+        transform: scale(1);
+        opacity: 1;
+    }
+    to{
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+.vanish{
+    animation: vanish .3s forwards;
+}
+
+.modal{
+    /* transform: scale(1.5); */
+  
+   animation: popup .3s;
+    background-color: var(--primary-color);
+   
+}
+.modal-header{
+    border-bottom : 1px solid var(--border-color);
+    font-size : 20px;
+    text-transform: uppercase;
+    padding : 12px;
+
+    text-align: center;
+}
+
+.modal-body{
+    padding : 16px;
+}
+
+.input-group{
+    display: flex;
+    flex-direction: column;
+    gap : 4px;
+    margin-bottom : 16px;
+}
+
+.input-group .input-title, .input-group-x .input-title{
+    color : #5f5c5c;
+}
+
+.input-group input, select{
+    padding : 8px;
+    font-family: 'Poppins', sans-serif;
+    color : #918686;
+}
+
+.input-group-x{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap : 12px;
+    margin-bottom : 16px;
+    margin-left : 4px;
+}
+
+.modal-footer{
+    padding : 12px;
+    border-top : 1px solid var(--border-color);
+    display: flex;
+    justify-content: right;
+    gap : 12px;
+}
+
+/* =================popup============= */
+
+.popup{
+    position: fixed;
+    top : 0;
+    left : 0;
+   
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .7);
+    z-index: 5;
+    overflow: hidden;
+}
+
+body.popup-open{
+    height: 100vh;
+   overflow: hidden;
+  
+}
